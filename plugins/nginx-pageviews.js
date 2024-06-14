@@ -44,7 +44,11 @@ module.exports = function (eleventyConfig, pluginOptions) {
     }
 
     function getUrlPath( url ) {
-        return url.replace(/index\..+$/, "").replace(/\/$/,"");
+        let path = url.replace(/index\..+$/, "");
+
+        if( path.endsWith("/") )
+            return path.slice(0, -1);
+        return path;
     }
 
     eleventyConfig.addShortcode( "pageViews", function ( page ) {

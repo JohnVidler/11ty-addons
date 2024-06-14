@@ -13,8 +13,11 @@ module.exports = function (eleventyConfig, pluginOptions) {
     const stats = {};
 
     if( fs.existsSync( CONFIG.log ) ) {
+        console.log( `[11ty] Reading NGinx logs...` );
+        let rows = 0;
         const logFile = fs.readFileSync( CONFIG.log, "utf8" );
         for( const line of logFile.split("\n") ){
+            rows++;
             const results = NGINX_LOG_REGEX.exec( line );
             if( results ) {
                 let { method, url, agent } = results.groups;
@@ -27,8 +30,6 @@ module.exports = function (eleventyConfig, pluginOptions) {
                 
                 agent = UAGENT_REGEX.exec(agent);
                 if( agent ) {
-                    console.log( agent[0] );
-
                     record.automata = record.automata || [];
                     if( ! record.automata.includes( agent[0] ) )
                         record.automata.push( agent[0] );
@@ -37,6 +38,7 @@ module.exports = function (eleventyConfig, pluginOptions) {
                 stats[url] = record;
             }
         }
+        console.log( `[11ty] Read ${rows} log lines...` );
     }
 
     function getUrlPath( url ) {

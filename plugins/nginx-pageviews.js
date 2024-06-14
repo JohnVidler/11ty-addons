@@ -53,24 +53,24 @@ module.exports = function (eleventyConfig, pluginOptions) {
         console.log( `[11ty] Read ${rows} log lines...` );
     }
 
-    eleventyConfig.addShortcode( "pageViews", function ( page ) {
-        const path = getUrlPath( page.url );
+    eleventyConfig.addShortcode( "pageViews", function ( url ) {
+        const path = getUrlPath( url );
 
         if( stats[ path ] )
             return stats[ path ].views || 0;
         return 0;
     } );
 
-    eleventyConfig.addShortcode( "pageMethods", function ( page ) {
-        const path = getUrlPath( page.url );
+    eleventyConfig.addShortcode( "pageMethods", function ( url ) {
+        const path = getUrlPath( url );
 
         if( stats[ path ] )
             return stats[ path ].methds || [];
         return [];
     } );
 
-    eleventyConfig.addShortcode( "pageBots", function ( page ) {
-        const path = getUrlPath( page.url );
+    eleventyConfig.addShortcode( "pageBots", function ( url ) {
+        const path = getUrlPath( url );
 
         if( stats[ path ] )
             return stats[ path ].automata || [];

@@ -35,6 +35,8 @@ module.exports = function (eleventyConfig, pluginOptions) {
                         record.automata.push( agent[0] );
                 }
 
+                console.log( `\t${url} -> ${record.views}` );
+
                 stats[url] = record;
             }
         }

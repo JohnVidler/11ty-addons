@@ -12,6 +12,14 @@ module.exports = function (eleventyConfig, pluginOptions) {
     // Load in the logs...
     const stats = {};
 
+    function getUrlPath( url ) {
+        let path = url.replace(/index\..+$/, "");
+
+        if( path.endsWith("/") )
+            return path.slice(0, -1);
+        return path;
+    }
+
     if( fs.existsSync( CONFIG.log ) ) {
         console.log( `[11ty] Reading NGinx logs...` );
         let rows = 0;
@@ -21,6 +29,8 @@ module.exports = function (eleventyConfig, pluginOptions) {
             const results = NGINX_LOG_REGEX.exec( line );
             if( results ) {
                 let { method, url, agent } = results.groups;
+
+                url = getUrlPath( url );
 
                 let record = stats[url] || {};
                 record.views = record.views + 1 || 1;
@@ -41,14 +51,6 @@ module.exports = function (eleventyConfig, pluginOptions) {
             }
         }
         console.log( `[11ty] Read ${rows} log lines...` );
-    }
-
-    function getUrlPath( url ) {
-        let path = url.replace(/index\..+$/, "");
-
-        if( path.endsWith("/") )
-            return path.slice(0, -1);
-        return path;
     }
 
     eleventyConfig.addShortcode( "pageViews", function ( page ) {

@@ -20,37 +20,41 @@ module.exports = function (eleventyConfig, pluginOptions) {
         return path;
     }
 
-    if( fs.existsSync( CONFIG.log ) ) {
-        console.log( `[11ty] Reading NGinx logs...` );
-        let rows = 0;
-        const logFile = fs.readFileSync( CONFIG.log, "utf8" );
-        for( const line of logFile.split("\n") ){
-            rows++;
-            const results = NGINX_LOG_REGEX.exec( line );
-            if( results ) {
-                let { method, url, agent } = results.groups;
+    try {
+        if( fs.existsSync( CONFIG.log ) ) {
+            console.log( `[11ty] Reading NGinx logs...` );
+            let rows = 0;
+            const logFile = fs.readFileSync( CONFIG.log, "utf8" );
+            for( const line of logFile.split("\n") ){
+                rows++;
+                const results = NGINX_LOG_REGEX.exec( line );
+                if( results ) {
+                    let { method, url, agent } = results.groups;
 
-                url = getUrlPath( url );
+                    url = getUrlPath( url );
 
-                let record = stats[url] || {};
-                record.views = record.views + 1 || 1;
+                    let record = stats[url] || {};
+                    record.views = record.views + 1 || 1;
 
-                record.methods = record.methods || {};
-                record.methods[method] = record.methods[method] + 1 || 1;
-                
-                agent = UAGENT_REGEX.exec(agent);
-                if( agent ) {
-                    record.automata = record.automata || [];
-                    if( ! record.automata.includes( agent[0] ) )
-                        record.automata.push( agent[0] );
+                    record.methods = record.methods || {};
+                    record.methods[method] = record.methods[method] + 1 || 1;
+                    
+                    agent = UAGENT_REGEX.exec(agent);
+                    if( agent ) {
+                        record.automata = record.automata || [];
+                        if( ! record.automata.includes( agent[0] ) )
+                            record.automata.push( agent[0] );
+                    }
+
+                    console.log( `\t${url} -> ${record.views}` );
+
+                    stats[url] = record;
                 }
-
-                console.log( `\t${url} -> ${record.views}` );
-
-                stats[url] = record;
             }
+            console.log( `[11ty] Read ${rows} log lines...` );
         }
-        console.log( `[11ty] Read ${rows} log lines...` );
+    } catch ( err ) {
+        console.warn( `Unable to read one or more logfiles (incorrect permissions?). Stats may be partially loaded.` );
     }
 
     eleventyConfig.addShortcode( "pageViews", function ( url ) {

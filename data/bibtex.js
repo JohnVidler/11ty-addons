@@ -35,7 +35,10 @@ module.exports = (eleventyConfig) => {
                     record.Fields.author = record.Fields.author.replace( ' AND ', '; ' );
             });
 
-            return records;
+            return {
+                list: records,
+                byYear: records.sort( (a,b) => a.Fields.year - b.Fields.year )
+            };
         } catch ( err ) {
             console.warn( `Unable to parse ${filepath}` );
             console.warn( err );

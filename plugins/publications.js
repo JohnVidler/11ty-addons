@@ -36,7 +36,7 @@ module.exports = function (eleventyConfig, pluginOptions) {
     }
 
 	let list = [];
-    list.push( ...await scholarly.user( pluginOptions.user ) );
+    /*list.push( ...await scholarly.user( pluginOptions.user ) );
     list = list.map( (v) => {
         if( isNaN(v.year) )
             v.year = null;
@@ -45,6 +45,6 @@ module.exports = function (eleventyConfig, pluginOptions) {
             v.url = `https://scholar.google.com/scholar?q=${encodeURIComponent(v.title+": "+v.authors.join(","))}`;
 
         return v;
-    } );
+    } );*/
     return list.sort( (a,b) => b.year - a.year );
 };
